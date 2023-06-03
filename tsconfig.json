@@ -22,10 +22,18 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "paths": {
+      "/opt/mock-data": ["./src/mocks/mock-data"],
+      "/opt/response-utils": ["./src/utils/response-utils"]
+    },
+    "outDir": "./dist",
+    "declaration": false,
+    "declarationMap": false
   },
   "exclude": [
     "node_modules",
-    "cdk.out"
+    "cdk.out",
+    "src/tests"
   ]
 }

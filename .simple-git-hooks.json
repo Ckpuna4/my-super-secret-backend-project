@@ -1,0 +1,3 @@
+{
+    "pre-commit": "echo \"Running the tests..\" && npm run test && echo \"The test is good. You are breathtaking!\""
+}

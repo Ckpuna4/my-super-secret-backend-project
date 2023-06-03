@@ -1,21 +1,5 @@
 {
-  "app": "npx ts-node --prefer-ts-exts bin/my-super-secret-backend-project.ts",
-  "watch": {
-    "include": [
-      "**"
-    ],
-    "exclude": [
-      "README.md",
-      "cdk*.json",
-      "**/*.d.ts",
-      "**/*.js",
-      "tsconfig.json",
-      "package*.json",
-      "yarn.lock",
-      "node_modules",
-      "test"
-    ]
-  },
+  "app": "node ./dist/my-super-secret-backend-project",
   "context": {
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
