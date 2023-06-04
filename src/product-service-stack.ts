@@ -4,7 +4,7 @@ import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from "path";
 
-export class MySuperSecretBackendProjectStack extends cdk.Stack {
+export class ProductServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
