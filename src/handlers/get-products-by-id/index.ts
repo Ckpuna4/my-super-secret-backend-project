@@ -20,7 +20,7 @@ export const handler = async (event: APIGatewayProxyEvent) => {
             };
         } else {
             body = {
-                message: `There is no product with id ${productId}`
+                message: 'Product not found'
             };
         }
 

@@ -40,7 +40,7 @@ describe('getProductsListById', () => {
         } as APIGatewayProxyEvent);
 
         expect(response).toEqual(constructResponse(200, {
-            message: `There is no product with id ${productId}`,
+            message: 'Product not found',
         }));
     });
 
