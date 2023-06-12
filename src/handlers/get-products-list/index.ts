@@ -1,6 +1,12 @@
-import {mockProducts} from "/opt/mock-data";
-import {constructResponse} from "/opt/response-utils";
+import {constructResponse, getProducts, logClientParams} from "/opt/handlers-utils";
 
 export const handler = async () => {
-    return constructResponse(200, mockProducts);
+    try {
+        logClientParams('no params');
+        const products = await getProducts();
+        return constructResponse(200, products);
+    } catch (e) {
+        console.error(e);
+        return constructResponse(500, {message: 'Internal error'});
+    }
 };

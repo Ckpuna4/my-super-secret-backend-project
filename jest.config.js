@@ -3,8 +3,7 @@ module.exports = {
   roots: ['<rootDir>/src/tests'],
   testMatch: ['**/*.test.ts'],
   moduleNameMapper: {
-    '^/opt/mock-data$': '<rootDir>/src/mocks/mock-data',
-    '^/opt/response-utils$': '<rootDir>/src/utils/response-utils',
+    '^/opt/handlers-utils$': '<rootDir>/src/utils/handlers-utils',
   },
   transform: {
     '^.+\\.tsx?$': 'ts-jest'

@@ -1,16 +1,16 @@
-import {mockMapOfProducts} from "/opt/mock-data";
-import {constructResponse} from "/opt/response-utils";
+import {constructResponse, getProductsById, logClientParams} from "/opt/handlers-utils";
 import {APIGatewayProxyEvent} from 'aws-lambda';
 
 export const handler = async (event: APIGatewayProxyEvent) => {
     try {
+        logClientParams(event.pathParameters);
         const productId = event.pathParameters!.productId as string | null;
 
         if (!productId) {
             return constructResponse(200, { message: 'id is empty' });
         }
 
-        const product = mockMapOfProducts.get(productId);
+        const product = await getProductsById(productId);
         let body;
 
         if (product) {
