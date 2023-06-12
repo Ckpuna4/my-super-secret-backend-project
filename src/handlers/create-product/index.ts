@@ -1,8 +1,10 @@
 import {constructResponse, createProduct, isBodyFit, logClientParams} from "/opt/handlers-utils";
-import {APIGatewayProxyEvent} from 'aws-lambda';
+import {APIGatewayProxyEvent, Context} from 'aws-lambda';
 
-export const handler = async (event: APIGatewayProxyEvent) => {
+export const handler = async (event: APIGatewayProxyEvent, context?: Context) => {
     try {
+        console.log(`Event: ${JSON.stringify(event, null, 2)}`);
+        console.log(`Context: ${JSON.stringify(context, null, 2)}`);
         const unprocessedBody = event.body;
         logClientParams(unprocessedBody);
         const body = JSON.parse(unprocessedBody || '');

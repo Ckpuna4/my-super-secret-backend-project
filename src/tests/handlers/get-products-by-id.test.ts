@@ -53,7 +53,7 @@ describe('getProductsListById', () => {
             product: fakeProduct
         }));
         expect(console.log).toHaveBeenCalled();
-        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledTimes(3);
     });
 
     it('should return message that there is no products with this id', async () => {
@@ -69,7 +69,7 @@ describe('getProductsListById', () => {
             message: 'Product not found',
         }));
         expect(console.log).toHaveBeenCalled();
-        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledTimes(3);
     });
 
     it('should return internal error if for example no event', async () => {

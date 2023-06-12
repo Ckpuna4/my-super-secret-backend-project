@@ -49,6 +49,6 @@ describe('getProductsList', () => {
         expect(response).toEqual(constructResponse(200, fakeProducts));
         expect(console.error).not.toHaveBeenCalled();
         expect(console.log).toHaveBeenCalled();
-        expect(console.log).toHaveBeenCalledTimes(1);
+        expect(console.log).toHaveBeenCalledTimes(2);
     });
 });
