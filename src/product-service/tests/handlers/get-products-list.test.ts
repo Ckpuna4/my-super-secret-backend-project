@@ -1,5 +1,5 @@
 import {handler} from "../../handlers/get-products-list";
-import {constructResponse} from "../../utils/handlers-utils";
+import {constructResponse} from "/opt/handlers-utils";
 const fakeProducts = [
     {
         id: "1",

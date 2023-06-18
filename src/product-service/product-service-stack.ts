@@ -47,7 +47,7 @@ export class ProductServiceStack extends cdk.Stack {
       },
     });
 
-    const utilsFolder = path.join(__dirname, 'utils');
+    const utilsFolder = path.join(__dirname, '..', 'utils');
 
     const utilsLayer = new lambda.LayerVersion(this, 'utils-layer', {
       compatibleRuntimes: [
