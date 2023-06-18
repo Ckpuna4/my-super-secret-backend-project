@@ -6,7 +6,6 @@
       "es2020",
       "dom"
     ],
-    "declaration": true,
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -35,6 +34,7 @@
     "node_modules",
     "cdk.out",
     "src/tests",
+    "src/import-service/tests",
     "tools"
   ]
 }
