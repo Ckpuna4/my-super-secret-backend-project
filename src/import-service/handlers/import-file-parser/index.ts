@@ -2,9 +2,13 @@ import {Context, S3Event} from "aws-lambda";
 import {CopyObjectCommand, DeleteObjectCommand, GetObjectCommand, S3Client} from "@aws-sdk/client-s3";
 import {Readable} from "stream";
 import * as csvParser from "csv-parser";
+import {SendMessageCommandOutput} from "@aws-sdk/client-sqs";
+const { SQSClient, SendMessageCommand } = require('@aws-sdk/client-sqs');
+
 
 const BUCKET_NAME = process.env!.BUCKET_NAME as string;
 const BUCKET_REGION = process.env!.BUCKET_REGION as string;
+const QUEUE_URL = process.env!.QUEUE_URL as string;
 
 export const handler = async (event: S3Event, context?: Context) => {
     try {
@@ -24,9 +28,25 @@ export const handler = async (event: S3Event, context?: Context) => {
         const response = await client.send(getObjectCommand);
         const stream = response.Body as Readable;
 
+        const sqsClient = new SQSClient({});
+
         stream.pipe(csvParser())
             .on('data', (row) => {
-                console.log('Received row:', row);
+                // console.log('Received row:', row);
+                const sendMessageCommand = new SendMessageCommand({
+                    QueueUrl: QUEUE_URL,
+                    MessageBody: JSON.stringify(row),
+                });
+
+                sqsClient.send(sendMessageCommand).then(
+                    (data: SendMessageCommandOutput) => {
+                        console.log('message sent resolved', data);
+                    },
+                    (error: unknown) => {
+                        console.log('message sent rejected', error);
+                    }
+                );
+                console.log('message sent');
             })
             .on('end', () => {
                 console.log('Finished parsing CSV file');

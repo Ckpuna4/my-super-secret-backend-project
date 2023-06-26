@@ -90,7 +90,7 @@ export const getProductsById = async (id: string) => {
     };
 };
 
-type AlmostProduct = {
+export type AlmostProduct = {
     description: string;
     price: number;
     title: string;
@@ -135,9 +135,9 @@ export const isBodyFit = (body: Partial<AlmostProduct>): body is AlmostProduct =
     return (
         typeof body === "object" &&
         typeof body!.description === "string" &&
-        typeof body!.price === "number" &&
+        typeof body!.price === "number" && !isNaN(body!.price) &&
         typeof body!.title === "string" &&
-        typeof body!.count === "number"
+        typeof body!.count === "number" && !isNaN(body!.count)
     );
 };
 
