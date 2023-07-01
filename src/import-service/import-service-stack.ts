@@ -3,7 +3,6 @@ import { Construct } from 'constructs';
 import * as apiGateway from 'aws-cdk-lib/aws-apigateway';
 import * as path from "path";
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as nodejs from 'aws-cdk-lib/aws-dynamodb';
 
 import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs'
 import * as lambda from "aws-cdk-lib/aws-lambda";
@@ -14,6 +13,8 @@ require('dotenv').config();
 
 const BUCKET_NAME = process.env.BUCKET_NAME as string;
 const BUCKET_REGION = process.env.BUCKET_REGION as string;
+const QUEUE_URL = process.env.QUEUE_URL as string;
+const QUEUE_ARN = process.env.QUEUE_ARN as string;
 
 export class ImportServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -64,7 +65,8 @@ export class ImportServiceStack extends cdk.Stack {
       handler: 'handler',
       environment: {
         BUCKET_NAME,
-        BUCKET_REGION
+        BUCKET_REGION,
+        QUEUE_URL,
       }
     });
 
@@ -73,6 +75,12 @@ export class ImportServiceStack extends cdk.Stack {
       resources: [`arn:aws:s3:::${BUCKET_NAME}/uploaded/*`, `arn:aws:s3:::${BUCKET_NAME}/parsed/*`],
     });
     importFileParser.addToRolePolicy(parserS3AccessPolicy);
+
+    const sqsPolicy = new iam.PolicyStatement({
+      actions: ['sqs:SendMessage'],
+      resources: [QUEUE_ARN],
+    });
+    importFileParser.addToRolePolicy(sqsPolicy);
 
     bucket.addEventNotification(
         s3.EventType.OBJECT_CREATED,

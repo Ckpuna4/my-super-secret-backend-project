@@ -5,11 +5,19 @@ import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as path from "path";
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as sqs from "aws-cdk-lib/aws-sqs";
+import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
+import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
+import * as sns from 'aws-cdk-lib/aws-sns';
+import * as subs from 'aws-cdk-lib/aws-sns-subscriptions';
 
 require('dotenv').config();
 
 const PRODUCTS_TABLE_NAME = process.env.PRODUCTS_TABLE_NAME as string;
 const STOCKS_TABLE_NAME = process.env.STOCKS_TABLE_NAME as string;
+const QUEUE_NAME = process.env.QUEUE_NAME as string;
+const MY_OWN_EMAIL = process.env.MY_OWN_EMAIL as string;
+const MY_SECOND_OWN_EMAIL = process.env.MY_SECOND_OWN_EMAIL as string;
 
 export class ProductServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -109,6 +117,40 @@ export class ProductServiceStack extends cdk.Stack {
     getProductsByIdLambdaFunction.addToRolePolicy(dynamoDBPolicy);
     const getProductsByIdLambdaIntegration = new apiGateway.LambdaIntegration(getProductsByIdLambdaFunction);
     getProductsByIdResource.addMethod('GET', getProductsByIdLambdaIntegration);
+
+    // sqs + new lambda
+    const queue = new sqs.Queue(this, 'CatalogItemsQueue', {
+      queueName: QUEUE_NAME,
+    });
+
+    const topic = new sns.Topic(this, 'createProductTopic');
+
+    const catalogBatchProcess = new NodejsFunction(this, 'catalogBatchProcess', {
+      runtime: lambda.Runtime.NODEJS_18_X,
+      entry: path.join(__dirname, './handlers/catalog-batch-process/index.js'),
+      environment: {
+        PRODUCTS_TABLE_NAME,
+        STOCKS_TABLE_NAME,
+        SNS_TOPIC_ARN: topic.topicArn,
+      },
+      handler: 'handler',
+    });
+    catalogBatchProcess.addToRolePolicy(dynamoDBPolicy);
+
+    catalogBatchProcess.addEventSource(new lambdaEventSources.SqsEventSource(queue, {
+      batchSize: 5,
+      maxBatchingWindow: cdk.Duration.seconds(1),
+    }));
+
+    const filterSuperPolicy = {
+      title: sns.SubscriptionFilter.stringFilter({
+        matchPrefixes: ['Super']
+      })
+    };
+
+    topic.addSubscription(new subs.EmailSubscription(MY_OWN_EMAIL));
+    topic.addSubscription(new subs.EmailSubscription(MY_SECOND_OWN_EMAIL, {filterPolicy: filterSuperPolicy}));
+    topic.grantPublish(catalogBatchProcess);
 
     new cdk.CfnOutput(this, 'apiUrl', {value: restApi.url});
   }
