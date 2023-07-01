@@ -11,10 +11,11 @@ import * as s3notifications from "aws-cdk-lib/aws-s3-notifications";
 
 require('dotenv').config();
 
-const BUCKET_NAME = process.env.BUCKET_NAME as string;
-const BUCKET_REGION = process.env.BUCKET_REGION as string;
-const QUEUE_URL = process.env.QUEUE_URL as string;
-const QUEUE_ARN = process.env.QUEUE_ARN as string;
+const BUCKET_NAME = process.env.BUCKET_NAME!;
+const BUCKET_REGION = process.env.BUCKET_REGION!;
+const QUEUE_URL = process.env.QUEUE_URL!;
+const QUEUE_ARN = process.env.QUEUE_ARN!;
+const AUTH_LAMBDA_NAME = process.env.AUTH_LAMBDA_NAME!;
 
 export class ImportServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -46,6 +47,21 @@ export class ImportServiceStack extends cdk.Stack {
     });
     importProductFileLambda.addToRolePolicy(s3AccessPolicy);
 
+    const basicAuthorizerLambda = lambda.Function.fromFunctionArn(
+        this,
+        'basicAuthorizerFromArn',
+        `arn:aws:lambda:${cdk.Stack.of(this).region}:${
+            cdk.Stack.of(this).account
+        }:function:${AUTH_LAMBDA_NAME}`,
+    );
+
+    const authorizer = new apiGateway.RequestAuthorizer(this, 'MySuperDuperAuthorizer', {
+      authorizerName: 'mySuperDuperAuthorizer',
+      handler: basicAuthorizerLambda,
+      identitySources: [apiGateway.IdentitySource.header('Authorization')],
+      resultsCacheTtl: cdk.Duration.seconds(0)
+    });
+
     const importResource = restApi.root.addResource('import');
     const importProductFileLambdaIntegration = new apiGateway.LambdaIntegration(importProductFileLambda);
     importResource.addMethod('GET', importProductFileLambdaIntegration, {
@@ -54,8 +70,11 @@ export class ImportServiceStack extends cdk.Stack {
       },
       requestValidatorOptions: {
         validateRequestParameters: true
-      }
+      },
+      authorizer,
+      authorizationType: apiGateway.AuthorizationType.CUSTOM,
     });
+
 
     const bucket = s3.Bucket.fromBucketName(this, 'ImportBucket', BUCKET_NAME);
 
