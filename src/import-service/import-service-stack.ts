@@ -8,7 +8,6 @@ import {NodejsFunction} from 'aws-cdk-lib/aws-lambda-nodejs'
 import * as lambda from "aws-cdk-lib/aws-lambda";
 import * as s3 from "aws-cdk-lib/aws-s3";
 import * as s3notifications from "aws-cdk-lib/aws-s3-notifications";
-
 require('dotenv').config();
 
 const BUCKET_NAME = process.env.BUCKET_NAME!;
@@ -16,6 +15,12 @@ const BUCKET_REGION = process.env.BUCKET_REGION!;
 const QUEUE_URL = process.env.QUEUE_URL!;
 const QUEUE_ARN = process.env.QUEUE_ARN!;
 const AUTH_LAMBDA_NAME = process.env.AUTH_LAMBDA_NAME!;
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': "'https://dgaojw28dgevx.cloudfront.net'",
+  'Access-Control-Allow-Headers': "'*'",
+  'Access-Control-Allow-Methods': "'OPTIONS,GET'"
+};
 
 export class ImportServiceStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -29,6 +34,15 @@ export class ImportServiceStack extends cdk.Stack {
         allowMethods: ['GET', 'OPTIONS'],
         allowOrigins: ['https://dgaojw28dgevx.cloudfront.net'],
       },
+    });
+
+    restApi.addGatewayResponse('GatewayResponseUNAUTHORIZED', {
+      type: apiGateway.ResponseType.UNAUTHORIZED,
+      responseHeaders: CORS_HEADERS
+    });
+    restApi.addGatewayResponse('GatewayResponseACCESS_DENIED', {
+      type: apiGateway.ResponseType.ACCESS_DENIED,
+      responseHeaders: CORS_HEADERS
     });
 
     const importProductFileLambda = new NodejsFunction(this, 'importProductFile', {
