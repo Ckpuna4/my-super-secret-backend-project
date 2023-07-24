@@ -17,7 +17,7 @@ const QUEUE_ARN = process.env.QUEUE_ARN!;
 const AUTH_LAMBDA_NAME = process.env.AUTH_LAMBDA_NAME!;
 
 const CORS_HEADERS = {
-  'Access-Control-Allow-Origin': "'https://dgaojw28dgevx.cloudfront.net'",
+  'Access-Control-Allow-Origin': "'*'",
   'Access-Control-Allow-Headers': "'*'",
   'Access-Control-Allow-Methods': "'OPTIONS,GET'"
 };
@@ -32,7 +32,7 @@ export class ImportServiceStack extends cdk.Stack {
       defaultCorsPreflightOptions: {
         allowHeaders: ['*'],
         allowMethods: ['GET', 'OPTIONS'],
-        allowOrigins: ['https://dgaojw28dgevx.cloudfront.net'],
+        allowOrigins: ['*'],
       },
     });
 
