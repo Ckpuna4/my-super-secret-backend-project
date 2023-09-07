@@ -51,7 +51,7 @@ export class ProductServiceStack extends cdk.Stack {
       defaultCorsPreflightOptions: {
         allowHeaders: ['*'],
         allowMethods: ['GET', 'OPTIONS'],
-        allowOrigins: ['https://dgaojw28dgevx.cloudfront.net'],
+        allowOrigins: ['*'],
       },
     });
 

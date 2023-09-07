@@ -13,7 +13,8 @@
     "deploy:import-service": "npm run build && cdk deploy ImportServiceStack --profile skreepatch --outputs-file ./cdk-outputs.json",
     "deploy:product-service": "npm run build && cdk deploy ProductServiceStack --profile skreepatch --outputs-file ./cdk-outputs.json",
     "deploy:auth-service": "npm run build && cdk deploy AuthorizationServiceStack --profile skreepatch --outputs-file ./cdk-outputs.json",
-    "init-tables": "tsc ./tools/add-items.ts && node ./tools/add-items.js"
+    "init-tables": "tsc ./tools/add-items.ts && node ./tools/add-items.js",
+    "eb:deploy-bff": "cd ./src/bff-service && npm run deploy"
   },
   "devDependencies": {
     "@aws-cdk/aws-apigateway": "^1.203.0",

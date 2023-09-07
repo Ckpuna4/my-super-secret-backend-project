@@ -25,3 +25,6 @@ The `cdk.json` file tells the CDK Toolkit how to execute the app.
 * [ImportServiceStack](https://5sa7tml0b4.execute-api.us-east-1.amazonaws.com/prod/)
 * [ProductServiceStack](https://m1rcin07mg.execute-api.us-east-1.amazonaws.com/prod/)
 * [CloudFront website](https://dgaojw28dgevx.cloudfront.net)
+
+## bff-service
+Don't forget init git in folder before initialization
